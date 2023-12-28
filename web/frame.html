@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Frame </title>
+  <link rel="stylesheet" href="css/master.css" />
+  <link rel="stylesheet" href="css/frame.css" />
+  <script src="js/installer.js" type="text/javascript"> </script>
+  <script src="js/track-offline.js" type="text/javascript"> </script>
+  <script src="js/authentification.js" type="text/javascript"> </script>
+  <script src="js/frame.js" type="text/javascript"> </script>
+</head>
+<body>
+  <p id="applabel" class="appname"> 
+    <img src="favicon.png" alt="app-icon" />
+    %appname% 
+    <button class="fr-invoke fr-set-chatroom"> Public Chat </button>
+  </p>
+  <div id="usercontrol">
+    <p id="welcome"> 
+      Hello <username class="fr-invoke fr-set-account">Unknown</username>. 
+    </p>
+    <button id="logoff"> Logout </button> 
+  </div>
+  <div id="content" class="form">
+    <iframe id="display"> </iframe>
+  </div>
+  <a id="icons8" href="https://icons8.com" target="_blank"> Icons by Icons8 </a>
+  <div id="menubar">
+    <div id="items">
+      <div class="fr-invoke fr-set-chatlist"> 
+        <p> Chats </p> 
+        <img src="https://img.icons8.com/ios-glyphs/100/chat.png" alt="chats-icon"/>
+      </div>
+      <div class="fr-invoke fr-set-account"> 
+        <p> Account </p> 
+        <img src="https://img.icons8.com/pulsar-line/96/user.png" alt="account-icon"/>
+      </div>
+      <div class="fr-invoke fr-set-options"> 
+        <p> Options </p> 
+        <img src="https://img.icons8.com/ios-filled/100/sorting-options.png" alt="options-icon"/>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

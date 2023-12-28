@@ -1,0 +1,71 @@
+
+.opt-slider {
+  margin: 1em 0;
+  border-radius: 0.5em;
+  border: #0004 thin solid;
+  background-color: #0002;
+  background-image: linear-gradient(transparent, #0002);
+  padding: 1em;
+}
+
+.opt-slider p {
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.opt-slider input {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 4em);
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background-color: var(--accentcolor);
+  transition: all 250ms ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background-color: var(--accentcolor);
+  transition: all 250ms ease;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: var(--frontcolor);
+  height: 2em;
+  width: 2em;
+  border-radius: 0.5em;
+  transition: all 250ms ease;
+}
+
+.slider::-moz-range-thumb {
+  background-color: var(--frontcolor);
+  height: 2em;
+  width: 2em;
+  border-radius: 0.5em;
+  transition: all 250ms ease;
+}
+
+#rainbow {
+  position: relative;
+  left: calc(100% - 1.25em);
+  transform: translateX(-100%);
+  font-size: 1em;
+  width: calc(100% - 2.35em);
+  color: var(--accentcolor);
+  border-color: var(--accentcolor);
+  transition: all 0.5s ease;
+}
+
+#rainbow.toggled {
+  color: var(--frontcolor);
+  border-color: var(--frontcolor);
+  transition: all 0.5s ease;
+}

@@ -1,0 +1,187 @@
+
+body {
+  overflow: hidden;
+}
+
+#applabel {
+  position: relative;
+  width: 100%;
+  height: 1.5em;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.25);
+  background-image: linear-gradient(transparent, #0006);
+  padding-top: 0.5em;
+  padding-bottom: 1.5em;
+  font-size: 3em;
+  text-align: center;
+  text-shadow: 0 0.05em 0.125em var(--frontcolor);
+}
+
+#applabel img {
+  position: relative;
+  top: 50%;
+  transform: translateY(-55%);
+  margin-right: 0.25em;
+  width: 1em;
+  filter: drop-shadow(0 0.05em #0008);
+}
+
+#applabel button {
+  font-size: 0.5em;
+  padding: 0.5em 0.5em;
+  position: absolute;
+  width: calc(100% - 4em);
+  left: 50%;
+  top: calc(50% + 1.25em);
+  transform: translate(calc(-50% - 0.5em), -50%);
+  text-align: left;
+  text-indent: 0.25em;
+}
+
+#applabel button.fr-active {
+  border-color: var(--accentcolor);
+  color: var(--accentcolor);
+  box-shadow: 0 0 0.25em var(--accentcolor),
+              inset 0 0 0.25em var(--accentcolor);
+  cursor: default;
+  animation: fr-rainbow 3s linear infinite forwards;
+  opacity: 0.5;
+}
+
+#content {
+  position: relative;
+  height: calc(100% - 28em);
+  margin: 2em;
+  background-color: #FFF1;
+  box-shadow: 0 0 0.25em var(--accentcolor);
+  border-color: transparent;
+  border-radius: 0.25em;
+}
+
+#menubar {
+  position: relative;
+  bottom: 1em;
+  width: calc(100% - 2em);
+  height: 5.75em;
+  border: #000A thin solid;
+  box-shadow: 0 0.5em 0.5em #0006, inset 0 0 0.5em #0008;
+  border-radius: 1.5em;
+  margin: 1em;
+  margin-top: 0.85em;
+  background-color: rgba(calc(var(--frontcolor_r) * 0.75), calc(var(--frontcolor_g) * 0.75), calc(var(--frontcolor_b) * 0.75), 0.125);
+}
+
+#menubar #items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#menubar #items div {
+  margin: 0 1.5em;
+  width: 5em;
+  cursor: pointer;
+}
+
+#menubar #items div p {
+  color: var(--accentcolor);
+  display: none;
+  top: 0;
+  transform: translateY(50%);
+  text-align: center;
+  margin-top: 0.1em;
+  transition: all 200ms ease;
+}
+
+#menubar #items div:hover p,
+#menubar #items div.fr-active p {
+  display: block;
+  text-shadow: 0 0.25em 0.5em var(--accentcolor);
+  transition: all 200ms ease;
+}
+
+#menubar #items div img {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0.75em;
+  width: 4.5em;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 0.5em var(--frontcolor));
+  transition: all 200ms ease;
+}
+
+#menubar #items div:hover img,
+#menubar #items div.fr-active img {
+  top: 0;
+  width: 2.75em;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 1em var(--accentcolor));
+  transition: all 200ms ease;
+}
+
+@keyframes fr-rainbow {
+  0% {
+    filter: invert(10%) hue-rotate(0deg);
+  }
+  100% {
+    filter: invert(10%) hue-rotate(360deg);
+  }
+}
+
+#menubar #items div.fr-active {
+  cursor: default;
+  animation: fr-rainbow 4s ease infinite forwards;
+}
+
+#usercontrol {
+  background-color: #0002;
+  background-image: linear-gradient(#0002, #0004);
+  margin: 0;
+  padding: 0.5em 1em;
+  text-indent: 0.5em;
+  font-size: 1.125em;
+  border: #0006 thin solid;
+  border-left: none;
+  border-right: none;
+}
+
+#usercontrol #welcome username.fr-active {
+  color: var(--accentcolor);
+  animation: fr-rainbow 3s ease infinite forwards;
+  cursor: default;
+}
+
+#usercontrol #logoff {
+  float: right;
+  font-size: 1.25em;
+  padding: 0.5em 2.5em;
+  margin-right: 0;
+  transform: translateY(-125%);
+}
+
+username {
+  color: var(--accentcolor);
+  cursor: pointer;
+}
+
+#content #display {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+}
+
+#icons8 {
+  color: var(--accentcolor);
+  text-decoration: none;
+  margin-left: 3.5em;
+  opacity: 0.7;
+}
+
+#icons8:hover {
+  opacity: 0.9;
+}

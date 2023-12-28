@@ -1,0 +1,7 @@
+port = "80"
+label = "DebShush"
+short_label = "Shush"
+front_color = [155, 255, 155]
+accent_color = [255, 155, 55]
+back_color = [33, 33, 39]
+data_folder = "db-debug"

@@ -1,0 +1,101 @@
+
+.chat-area {
+  position: relative;
+  margin: 2em;
+  left: 0;
+  width: calc(100% - 4.5em);
+  height: calc(100% - 23em);
+  resize: none;
+  outline: none;
+  border: rgb(calc(var(--accentcolor_r) * 0.5), calc(var(--accentcolor_g) * 0.5), calc(var(--accentcolor_b) * 0.5)) thin dashed;
+  background-color: #0006;
+  border-radius: 0.5em;
+  transition: all 0.5s ease;
+}
+
+.chat-area.received {
+  box-shadow: inset 0 0 2em rgb(calc(var(--frontcolor_r) * 0.25), calc(var(--frontcolor_g) * 0.25), calc(var(--frontcolor_b) * 0.25));
+  transition: all 0.5s ease;
+}
+
+.chat-input-field {
+  position: relative;
+  padding: 0 0.5em;
+  left: 0.5em;
+  width: calc(100% - 2em);
+  height: 8em;
+  background-color: #0004;
+  border-radius: 0.25em;
+  border: #000C thin solid;
+  box-shadow: 0 0 0.5em #0008;
+}
+
+.chat-input-field * {
+  font-size: 1.5em;
+  margin: 1.25em 0.25em;
+}
+
+.chat-input-field textarea {
+  position: relative;
+  padding: 0.75em 0.5em;
+  width: calc(100% - 17em);
+  height: 4em;
+  margin-left: 0.75em;
+  font-size: 1em;
+  background-color: #0004;
+  resize: none;
+  color: #FFF;
+  border-radius: 0.5em;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.chat-input-field textarea:focus {
+  border-color: var(--frontcolor);
+  transition: border-color 200ms ease;
+}
+
+.chat-input-field button {
+  position: relative;
+  float: right;
+  margin-right: 0.75em;
+  margin-top: 1.5em;
+  font-size: 1.5em;
+  width: 2.5em;
+  height: 2.5em;
+}
+
+.chat-input-field button.disabled {
+  cursor: default;
+  color: #AAA;
+  border-color: #AAA;
+}
+
+.chat-input-field .chat-send {
+  height: 3.5em;
+  margin-top: 1em;
+}
+
+.chat-input-field .chat-memo,
+.chat-input-field .chat-media {
+  font-size: 1.25em;
+  margin-top: 2em;
+  transition: all 200ms ease;
+}
+
+
+@keyframes ch-rainbow {
+  0% {
+    filter: invert(10%) hue-rotate(0deg);
+  }
+  100% {
+    filter: invert(10%) hue-rotate(360deg);
+  }
+}
+
+.chat-input-field .chat-memo.recording {
+  animation: ch-rainbow 2s ease infinite forwards;
+  padding-top: 0.8em;
+  border-radius: 0.25em;
+  transition: all 200ms ease;
+}
