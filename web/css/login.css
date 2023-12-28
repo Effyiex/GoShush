@@ -1,0 +1,86 @@
+
+#login {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  padding: 4em 3em;
+  transform: translate(-50%, -50%);
+  font-size: 0.9em;
+}
+
+body.portrait #login {
+  font-size: 1.375em;
+}
+
+#login .appname {
+  margin-top: 0;
+  background-color: #0002;
+  border-radius: 0.125em;
+  padding: 0.5em;
+  padding-top: 3em;
+  border: #0004 thin solid;
+  text-shadow: 0 0.1em 0.125em rgb(calc(var(--frontcolor_r) * 0.5), calc(var(--frontcolor_g) * 0.5), calc(var(--frontcolor_b) * 0.5));
+}
+
+#login .appname img {
+  position: absolute;
+  width: 1.75em;
+  top: 1.75em;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 0.125em black)
+}
+
+#login h1 {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  margin-top: 2em;
+  color: var(--accentcolor);
+  text-shadow: none;
+  text-decoration: underline;
+}
+
+#login #authdata {
+  padding: 0.5em;
+  position: relative;
+  left: 50%;
+  width: 20em;
+  transform: translateX(-50%);
+  transition: all 200ms ease;
+}
+
+#login #authdata:focus-within {
+  font-size: 1.1em;
+  transition: all 200ms ease;
+}
+
+#login #authdata input {
+  width: calc(100% - 2em);
+  font-size: 1em;
+}
+
+#login #authdata input:focus {
+  padding: 0.75em 0.5em;
+}
+
+#login #submit {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.25em;
+  padding: 1em 5em;
+  margin: 2em 0;
+}
+
+#login #submit:hover {
+  padding: 1.25em 5.5em;
+}
+
+#login #authdata #register {
+  position: relative;
+  left: 0;
+  width: 1em;
+  transform: none;
+}
