@@ -1,6 +1,4 @@
 db-*
 bb3.toml
-<<<<<<< HEAD
 srv-*
-=======
->>>>>>> fe4a0115791ac06ec90bd55a1897fafbfbefddc3
+out-*
