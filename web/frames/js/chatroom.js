@@ -46,7 +46,7 @@ class ChatMessageContent {
 
   constructor(body, type) {
     this.body = body;
-    this.type = type ? type : "text";
+    this.type = (type ? type : "text");
   }
 
 }
@@ -115,9 +115,7 @@ const MEMO_CLICK_LISTENER = async (ev) => {
     };
     memoRecorder.start();
 
-  }).catch((err) => {
-    console.log(err);
-  });
+  }).catch(err => console.log(err));
 
 };
 
@@ -128,14 +126,8 @@ window.addEventListener("load", () => {
 
   queryChatMessages();
 
-  document.querySelectorAll("*").forEach(element => {
-    var child = element.firstChild;
-    while(child) {
-      if(child.nodeType === Node.TEXT_NODE) 
-        child.textContent = child.textContent.replace("%chatlabel%", CHAT_CFG.label);
-      child = child.nextSibling;
-    }
-  });
+  if(MARKUP_VARIABLES)
+  MARKUP_VARIABLES.write("chat_label", CHAT_CFG.label);
 
   const inputField = document.querySelector(".chat-text");
 
