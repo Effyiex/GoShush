@@ -2,12 +2,16 @@
 
 SRV_PKG_LABEL=$1
 
+ECHO_PKG_INSTITUTION="deploy"
 echo_pkg() {
-  echo -n "(deploy/$SRV_PKG_LABEL): "
+  echo -n "($SRV_PKG_LABEL/$ECHO_PKG_INSTITUTION): "
   echo $*
+  if [ "$(echo -n "$*" | tail -c 1)" = " " ]; then 
+    printf ' '
+  fi
 }
 
-DEPLOY_OUTPUT_ROOT="out-$SRV_PKG_LABEL"
+DEPLOY_OUTPUT_ROOT="pkg-$SRV_PKG_LABEL"
 if [ ! -d $DEPLOY_OUTPUT_ROOT ]; then
   mkdir $DEPLOY_OUTPUT_ROOT
   echo_pkg "Initialized output-root: \"$DEPLOY_OUTPUT_ROOT\"."
@@ -20,81 +24,133 @@ if [ ! -d "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT" ]; then
 fi
 
 SRV_PKG_CONFIG="$SRV_PKG_LABEL.toml"
-cp $SRV_PKG_CONFIG "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/$SRV_PKG_CONFIG"
+cp $SRV_PKG_CONFIG "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/config.toml"
 
 if [ -d "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/web" ]; then
   rm -r $DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/web
 fi
 cp -r web $DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/web
 
-OS=$(go env GOOS)
-ARCH=$(go env GOARCH)
-echo_pkg -n "Compile to another infrastructure? [y/n]: "
-read CHANGE_INFRASTRUCTURE
-if test $CHANGE_INFRASTRUCTURE = 'y' || test $CHANGE_INFRASTRUCTURE == 'Y'; then
-  printf '\n'
-  echo_pkg "Enter a platform like .."
-  echo_pkg "(windows/linux/darwin/netbsd/openbsd/freebsd/solaris/dragonfly/android/plan9)"
-  echo_pkg -e -n "-> "
-  read OS
-  printf '\n'
-  echo_pkg "Enter a architecture like .."
-  echo_pkg "(386/amd64/arm/arm64/ppc64/ppc64le/mips/mips64/s390x/riscv64)"
-  echo_pkg -e -n "-> "
-  read ARCH
-  printf '\n'
-fi
-
-echo_pkg "Compiling..."
-env GOOS=$OS GOARCH=$ARCH go build -o "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/serv"
-
-DEFAULT_FTP_USERNAME="effyiex"
-DEFAULT_FTP_HOST="raspberrypi"
-if test $2 == "/ftp" || test $2 == "-ftp"; then
-
-  echo_ftp() {
-    echo -n "(ftp-deploy/$SRV_PKG_LABEL): "
-    echo $*
-  }
-
-  echo_ftp -n "Continue with default connection? [y/n]: "
-  read FTP_DEFAULT_CONNECTION
-  if test $FTP_DEFAULT_CONNECTION = 'y' || test $FTP_DEFAULT_CONNECTION == 'Y'; then
-    FTP_USERNAME=$DEFAULT_FTP_USERNAME
-    FTP_HOST=$DEFAULT_FTP_HOST  
-  else
-    echo_ftp -n "Enter hostname: "
-    read FTP_HOST
-    echo_ftp -n "Enter username: "
-    read FTP_USERNAME
+PKG_OS=$(go env GOOS)
+PKG_ARCH=$(go env GOARCH)
+while [ true ]; do
+  echo_pkg -n "Compile to another infrastructure? [y/n]: "
+  read CHANGE_INFRASTRUCTURE
+  if test $CHANGE_INFRASTRUCTURE = 'y' || test $CHANGE_INFRASTRUCTURE = 'Y'; then
+    printf '\n'
+    echo_pkg "Enter a platform like .."
+    echo_pkg "(windows/linux/darwin/netbsd/openbsd/freebsd/solaris/dragonfly/android/plan9)"
+    echo_pkg -e -n "-> "
+    read PKG_OS
+    printf '\n'
+    echo_pkg "Enter a architecture like .."
+    echo_pkg "(386/amd64/arm/arm64/ppc64/ppc64le/mips/mips64/s390x/riscv64)"
+    echo_pkg -e -n "-> "
+    read PKG_ARCH
+    printf '\n'
+    break
+  elif test $CHANGE_INFRASTRUCTURE = 'n' || test $CHANGE_INFRASTRUCTURE = 'N'; then
+    break
   fi
+done
 
-  echo_ftp -n "Enter Password: "
+echo_pkg "Compiling server..."
+env GOOS=$PKG_OS GOARCH=$PKG_ARCH go build -o "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/srv-$SRV_PKG_LABEL"
+
+DEFAULT_FTP_ENDPOINT_ROOT="Effyiex-Software"
+DEFAULT_FTP_USERNAME="effyiex"
+DEFAULT_FTP_PI_HOST="Effyiex-PI"
+DEFAULT_FTP_MIN_HOST="Effyiex-Minimal"
+if test $2 = "/ftp" || test $2 = "-ftp"; then
+
+  ECHO_PKG_INSTITUTION="ftp-deploy"
+
+  while [ true ]; do
+    echo_pkg "Continue with which connection? (pi/min/custom/cancel)"
+    echo_pkg -e -n "-> "
+    read FTP_IN_CONNECTION
+    FTP_USERNAME=$DEFAULT_FTP_USERNAME
+    if test $FTP_IN_CONNECTION = "pi"; then
+      FTP_HOST=$DEFAULT_FTP_PI_HOST
+    elif test $FTP_IN_CONNECTION = "min"; then
+      FTP_HOST=$DEFAULT_FTP_MIN_HOST  
+    elif test $FTP_IN_CONNECTION = "custom"; then
+      echo_pkg -n "Enter hostname: "
+      read FTP_HOST
+      echo_pkg -n "Enter username: "
+      read FTP_USERNAME
+    elif test $FTP_IN_CONNECTION = "cancel"; then
+      echo_pkg "Canceled."
+      exit 0
+    fi
+    ping $FTP_HOST &>/dev/null; if [ $? = 0 ]; then
+      break
+    else
+      echo_pkg "Connection failed. Try again."
+    fi
+  done
+
+  echo_pkg -n "Enter Password: "
+  printf ' '
   read -s FTP_PASSWORD
   printf '\n'
 
-  echo_ftp "Indexing local package-instance..."
+  echo_pkg "Indexing local package-instance..."
   FTP_LOCAL_ROOT="$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT"
-  FTP_REMOTE_ROOT="~/Documents/$SRV_PKG_ROOT"
+  FTP_REMOTE_ROOT="$DEFAULT_FTP_ENDPOINT_ROOT/$SRV_PKG_ROOT"
   FTP_INDEXING=$(
+    printf "mkdir $DEFAULT_FTP_ENDPOINT_ROOT\n"
     find $FTP_LOCAL_ROOT -type d -printf "mkdir $FTP_REMOTE_ROOT/%P\n"
     find $FTP_LOCAL_ROOT -type f -exec echo -n "put {} " \; -printf "$FTP_REMOTE_ROOT/%P\n"
   )
   echo "$(echo "$FTP_INDEXING")" > "$DEPLOY_OUTPUT_ROOT/latest-ftp-indexing.log"
-  sleep "2s"
+  sleep "1s"
 
-  echo_ftp "Deploying to \"$FTP_HOST\"..."
-  ftp -n $FTP_HOST <<END_OF_PROTOCOL > "$DEPLOY_OUTPUT_ROOT/latest-ftp-deploy.log"
-quote USER $FTP_USERNAME
-quote PASS $FTP_PASSWORD
-binary
-$FTP_INDEXING
-bye
-END_OF_PROTOCOL
-  sleep "2s"
+  echo_pkg "Initiating Python-FTP-Client..."
+  echo "
+from ftplib import FTP, all_errors as FTP_ERRORS
+print(\"Creating FTP-Client...\")
+ftp = FTP(\"$FTP_HOST\")
+print(\"Logging in...\")
+ftp.login(\"$FTP_USERNAME\", \"$FTP_PASSWORD\")
+print(\"Starting transfer...\")
+for indexed in \"\"\"$FTP_INDEXING\"\"\".split(\"\n\"):
+  args = indexed.split(\" \")
+  if len(args) < 2:
+    continue
+  elif args[0] == \"mkdir\":
+    print(\" > MKD \" + args[1])
+    try:
+      print(\" < \" + ftp.mkd(args[1]))
+    except FTP_ERRORS as e:
+      print(\" < Error: \" + str(e).split(None, 1)[0])
+  elif len(args) < 3:
+    continue
+  elif args[0] == \"put\":
+    print(\" > STOR \" + args[2])
+    try:
+      print(\" < \" + ftp.storbinary(\"STOR \" + args[2], open(args[1], \"rb\")))  
+    except FTP_ERRORS as e:
+      print(\" < Error: \" + str(e).split(None, 1)[0])
+ftp.close()
+  " > "$DEPLOY_OUTPUT_ROOT/ftpclient.py"
+  sleep "1s"
 
-  echo_ftp "Disposing local package-instance..."
-  rm -r "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT"
-  echo_ftp "Done." 
+  echo_pkg "Deploying to \"$FTP_HOST\"..."
+  py "$DEPLOY_OUTPUT_ROOT/ftpclient.py" > "$DEPLOY_OUTPUT_ROOT/latest-ftp-deploy.log"
+  sleep "1s"
+
+  if test $3 = "/keep" || test $3 = "-keep"; then
+    echo_pkg "Keeping Python-FTP-Client."
+    echo_pkg "Keeping local package-instance."
+  else
+    echo_pkg "Disposing Python-FTP-Client..."
+    rm "$DEPLOY_OUTPUT_ROOT/ftpclient.py"
+    echo_pkg "Disposing local package-instance..."
+    rm -r "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT"
+  fi
+
+  sleep "1s" 
+  echo_pkg "Done." 
 
 fi

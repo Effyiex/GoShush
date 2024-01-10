@@ -14,11 +14,11 @@ import (
 type HostConfig struct {
 	Port        string  `toml:"port"`
 	Label       string  `toml:"label"`
-	ShortLabel  string  `toml:"short_label"`
-	FrontColor  [3]byte `toml:"front_color"`
-	AccentColor [3]byte `toml:"accent_color"`
-	BackColor   [3]byte `toml:"back_color"`
-	DataFolder  string  `toml:"data_folder"`
+	ShortLabel  string  `toml:"short-label"`
+	FrontColor  [3]byte `toml:"front-color"`
+	AccentColor [3]byte `toml:"accent-color"`
+	BackColor   [3]byte `toml:"back-color"`
+	DataFolder  string  `toml:"data-folder"`
 }
 
 type WebAppIcon struct {

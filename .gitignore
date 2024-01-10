@@ -1,4 +1,4 @@
 db-*
 bb3.toml
 srv-*
-out-*
+pkg-*
