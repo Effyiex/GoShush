@@ -1,5 +1,16 @@
 #!/bin/bash/
 
+PKG_FLAG_FTP_DEPLOY=false
+PKG_FLAG_TLS_DEPLOY=false
+for arg in "$@"
+do
+  if test $arg = "-ftp" || test $arg = "/ftp"; then
+    PKG_FLAG_FTP_DEPLOY=true
+  elif test $arg = "-tls" || test $arg = "/tls"; then
+    PKG_FLAG_TLS_DEPLOY=true
+  fi
+done
+
 SRV_PKG_LABEL=$1
 
 ECHO_PKG_INSTITUTION="deploy"
@@ -56,12 +67,38 @@ done
 
 echo_pkg "Compiling server..."
 env GOOS=$PKG_OS GOARCH=$PKG_ARCH go build -o "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/srv-$SRV_PKG_LABEL"
+sleep "1s"
+echo_pkg "Done."
+
+if [ $PKG_FLAG_TLS_DEPLOY = true ]; then
+
+  ECHO_PKG_INSTITUTION="tls-deploy"
+
+  if [ ! -d "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/tls" ]; then 
+    echo_pkg "Initializing TLS-Root..."
+    mkdir "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/tls"
+  fi
+
+  echo_pkg -e -n "Certificate (PEM) > "
+  read TLS_IN_CERTIFICATE
+  echo_pkg -e -n "Key (PEM) > "
+  read TLS_IN_KEY
+
+  echo_pkg "Writing Certificate..."
+  echo "$TLS_IN_CERTIFICATE" > "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/tls/certificate.pem"
+  echo_pkg "Writing Key..."
+  echo "$TLS_IN_KEY" > "$DEPLOY_OUTPUT_ROOT/$SRV_PKG_ROOT/tls/key.pem"
+
+  sleep "1s"
+  echo_pkg "Done."
+
+fi
 
 DEFAULT_FTP_ENDPOINT_ROOT="Effyiex-Software"
 DEFAULT_FTP_USERNAME="effyiex"
 DEFAULT_FTP_PI_HOST="Effyiex-PI"
 DEFAULT_FTP_MIN_HOST="Effyiex-Minimal"
-if test $2 = "/ftp" || test $2 = "-ftp"; then
+if [ PKG_FLAG_FTP_DEPLOY = true ]; then
 
   ECHO_PKG_INSTITUTION="ftp-deploy"
 

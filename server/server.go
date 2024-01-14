@@ -68,11 +68,16 @@ type Server struct {
 	Intercepts           map[string]InterceptFunc
 	GeneralHTMLIntercept InterceptFunc
 	FileQueryRoutes      []string
+	TLS                  bool
 }
 
 func NewServer(cfg HostConfig) *Server {
 	if _, err := os.Stat(cfg.DataFolder); os.IsNotExist(err) {
 		os.Mkdir(cfg.DataFolder, os.ModePerm)
+	}
+	tls := false
+	if _, err := os.Stat("tls"); os.IsExist(err) {
+		tls = true
 	}
 	users := BootUserManager(cfg.DataFolder)
 	chats := BootChatManager(cfg.DataFolder)
@@ -84,6 +89,7 @@ func NewServer(cfg HostConfig) *Server {
 		AppManifest:     NewAppManifest(cfg),
 		Intercepts:      map[string]InterceptFunc{},
 		FileQueryRoutes: make([]string, 0),
+		TLS:             tls,
 	}
 	srv.GeneralHTMLIntercept = srv.NewGeneralHTMLIntercept()
 	srv.RegisterBackRoutes()
@@ -95,7 +101,11 @@ func (srv *Server) Run() {
 	fmt.Println("Launching CommandLine-Listener.")
 	go srv.CommandLineListener()
 	fmt.Println("Hosting on \"127.0.0.1:" + srv.Config.Port + "\".")
-	http.ListenAndServe(":"+srv.Config.Port, srv)
+	if srv.TLS {
+		http.ListenAndServeTLS(":"+srv.Config.Port, "/tls/certificate.pem", "/tls/key.pem", srv)
+	} else {
+		http.ListenAndServe(":"+srv.Config.Port, srv)
+	}
 }
 
 func (srv *Server) HandleIntercept(route string, interceptor InterceptFunc) {
@@ -198,6 +208,10 @@ func (srv *Server) RegisterFrontRoutes() {
 
 	srv.WalkWebFilesRoot()
 	srv.HandleFileQuery("/", "web/login.html")
+	if srv.TLS {
+		srv.HandleFileQuery("/tls/certificate.pem", "tls/certificate.pem")
+		srv.HandleFileQuery("/tls/key.pem", "tls/key.pem")
+	}
 
 	srv.HandleIntercept("/css/master.css", func(data []byte) []byte {
 		script := string(data)

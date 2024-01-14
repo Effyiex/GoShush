@@ -21,7 +21,7 @@ type ChatMessage struct {
 	Received []uuid.UUID          `json:"received"`
 }
 
-type Chat struct {
+type ChatRoom struct {
 	ID       uuid.UUID     `json:"id"`
 	Title    string        `json:"title"`
 	Members  []uuid.UUID   `json:"members"`
@@ -31,14 +31,14 @@ type Chat struct {
 const CHATS_STORAGE = "chats.json"
 
 type ChatManager struct {
-	Chats     []Chat        `json:"chats"`
+	Chats     []ChatRoom    `json:"chats"`
 	Broadcast []ChatMessage `json:"broadcast"`
 	Server    *Server       `json:"-"`
 }
 
 func BootChatManager(dataFolder string) ChatManager {
 	cm := ChatManager{
-		Chats:     make([]Chat, 0),
+		Chats:     make([]ChatRoom, 0),
 		Broadcast: make([]ChatMessage, 0),
 	}
 	cm.Load(dataFolder)
@@ -123,6 +123,7 @@ func (cm *ChatManager) QueryBroadcast() http.HandlerFunc {
 		}
 		cm.Broadcast = overwrite
 
+		w.Header().Add("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(&messages)
 
 	}
@@ -144,7 +145,7 @@ func (cm *ChatManager) QueryChats() http.HandlerFunc {
 			return
 		}
 
-		var chats []Chat
+		var chats []ChatRoom
 		for _, chat := range cm.Chats {
 			for _, member := range chat.Members {
 				if member == user {

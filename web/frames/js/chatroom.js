@@ -19,9 +19,9 @@ const isMicrophoneAllowed = callback => {
 function queryChatMessages() {
 
   var latestMessageBuffer = JSON.parse(localStorage.getItem(CHAT_CFG.bufferStorageKey));
-  if(!latestMessageBuffer) 
-    latestMessageBuffer = [];
-
+  if(latestMessageBuffer === undefined || latestMessageBuffer === null) 
+  latestMessageBuffer = [];
+  
   if(CHAT_CFG.id) {
     
   } else { // Broadcast
@@ -33,8 +33,9 @@ function queryChatMessages() {
     })
       .then((response) => response.json())
       .then((messages) => {
-        for(var i = 0; i < messages.length; i++)
-        latestMessageBuffer.push(messages[i]);
+        var message;
+        while((message = messages.pop()))
+          latestMessageBuffer.push(message);
       });
   }
 
